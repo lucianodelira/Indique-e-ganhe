@@ -1,0 +1,57 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Compartilhe e Ganhe</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; padding: 30px; }
+    .container { max-width: 600px; margin: auto; }
+    .creditos { font-size: 24px; margin: 20px 0; }
+    input, button { padding: 10px; margin: 10px; width: 80%; max-width: 400px; }
+    .link-box { background: #f0f0f0; padding: 10px; border-radius: 8px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Compartilhe e Ganhe</h1>
+    <p>Ganhe créditos indicando amigos!</p>
+    <div class="creditos">Você tem <strong id="creditos">0</strong> créditos.</div>
+    <div class="link-box">
+      Seu link de convite:<br />
+      <input type="text" id="linkConvite" readonly />
+    </div>
+    <button onclick="copiarLink()">Copiar Link</button>
+    <p>Convide amigos para atingir 100 créditos e desbloquear prêmios.</p>
+  </div>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const ref = urlParams.get('ref') || 'anonimo';
+
+    let usuarioId = localStorage.getItem('usuarioId');
+    if (!usuarioId) {
+      usuarioId = 'user_' + Math.random().toString(36).substr(2, 9);
+      localStorage.setItem('usuarioId', usuarioId);
+    }
+
+    document.getElementById('linkConvite').value =
+      window.location.origin + "/r.html?ref=" + usuarioId;
+
+    fetch('https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec?usuario=' + usuarioId + '&ref=' + ref)
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById('creditos').innerText = data.creditos;
+      });
+
+    function copiarLink() {
+      const input = document.getElementById('linkConvite');
+      input.select();
+      input.setSelectionRange(0, 99999);
+      document.execCommand('copy');
+      alert("Link copiado!");
+    }
+  </script>
+</body>
+</html>
