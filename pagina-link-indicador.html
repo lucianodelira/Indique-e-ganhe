@@ -1,30 +1,3 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Compartilhe e Ganhe</title>
-  <style>
-    body { font-family: Arial, sans-serif; text-align: center; padding: 30px; }
-    .container { max-width: 600px; margin: auto; }
-    .creditos { font-size: 24px; margin: 20px 0; }
-    input, button { padding: 10px; margin: 10px; width: 80%; max-width: 400px; }
-    .link-box { background: #f0f0f0; padding: 10px; border-radius: 8px; }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h1>Compartilhe e Ganhe</h1>
-    <p>Ganhe créditos indicando amigos!</p>
-    <div class="creditos">Você tem <strong id="creditos">0</strong> créditos.</div>
-    <div class="link-box">
-      Seu link de convite:<br />
-      <input type="text" id="linkConvite" readonly />
-    </div>
-    <button onclick="copiarLink()">Copiar Link</button>
-    <p>Convide amigos para atingir 100 créditos e desbloquear prêmios.</p>
-  </div>
-
 <script>
   const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbyFriYIIwGudH0wRNLtD-6iK01sCvklQslRiEeRFdWuuKUWxQpKaTXFSQyavLBGkfyA/exec';
 
@@ -40,15 +13,12 @@
 
   // Pega parâmetro 'user' da URL
   const urlParams = new URLSearchParams(window.location.search);
-  const usuarioIdURL = urlParams.get('user'); // CORREÇÃO AQUI: pegar 'user'
-
-  // Se tiver 'user' na URL, usa ele, senão usa id local
+  const usuarioIdURL = urlParams.get('user'); // Ex: ?user=user_abc123
   const usuarioId = usuarioIdURL || getUsuarioId();
 
   // Atualiza campo do link de convite com o usuário atual
-document.getElementById('linkConvite').value =
-  window.location.origin + '/Indique-e-ganhe/r.html?ref=' + usuarioId;
-
+  document.getElementById('linkConvite').value =
+    window.location.origin + '/Indique-e-ganhe/r.html?ref=' + usuarioId;
 
   // Busca créditos da API para esse usuário
   fetch(`${WEBAPP_URL}?usuario=${usuarioId}`)
@@ -56,6 +26,7 @@ document.getElementById('linkConvite').value =
     .then(data => {
       if (data.creditos !== undefined) {
         document.getElementById('creditos').innerText = data.creditos;
+        console.log('Créditos carregados:', data.creditos);
       } else if (data.erro) {
         alert('Erro: ' + data.erro);
       }
@@ -72,51 +43,4 @@ document.getElementById('linkConvite').value =
     document.execCommand('copy');
     alert("Link copiado!");
   }
-
-
-
-
-
-const params = new URLSearchParams(window.location.search);
-  const nomeUsuario = params.get('usuario');
-
-  if (nomeUsuario) {
-    
-
-    fetch(url)
-      .then(response => response.json())
-      .then(data => {
-        if (data && data.creditos !== undefined) {
-          document.getElementById('creditos').textContent = data.creditos;
-        }
-      })
-      .catch(error => console.error('Erro na requisição:', error));
-  }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
 </script>
-
-</body>
-</html>
