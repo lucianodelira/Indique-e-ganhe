@@ -72,6 +72,50 @@ document.getElementById('linkConvite').value =
     document.execCommand('copy');
     alert("Link copiado!");
   }
+
+
+
+
+
+const params = new URLSearchParams(window.location.search);
+  const nomeUsuario = params.get('usuario');
+
+  if (nomeUsuario) {
+    
+
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        if (data && data.creditos !== undefined) {
+          document.getElementById('creditos').textContent = data.creditos;
+        }
+      })
+      .catch(error => console.error('Erro na requisição:', error));
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
 </script>
 
 </body>
