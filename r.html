@@ -7,25 +7,25 @@
 <body>
   Redirecionando para o aplicativo...
 
-<script>
-  const urlParams = new URLSearchParams(window.location.search);
-  const ref = urlParams.get('ref') || 'anonimo';
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const ref = urlParams.get('ref') || 'anonimo';
 
-  // 🔁 Usa o próprio `ref` como nome do indicador (quem receberá créditos)
-  const usuarioId = 'user_' + Math.random().toString(36).substr(2, 9);
-  localStorage.setItem('usuarioId', usuarioId);
+    // Gerar novo ID de usuário
+    const usuarioId = 'user_' + Math.random().toString(36).substr(2, 9);
+    localStorage.setItem('usuarioId', usuarioId);
 
-  const destino = "https://aplicativo.acertosclub.com?ref=" + usuarioId;
+    const destino = "https://aplicativo.acertosclub.com?ref=" + usuarioId;
 
-  // ⬇️ Registra que "usuarioId" foi indicado por "ref"
-  fetch('https://script.google.com/macros/s/AKfycbyFriYIIwGudH0wRNLtD-6iK01sCvklQslRiEeRFdWuuKUWxQpKaTXFSQyavLBGkfyA/exec?usuario=' + usuarioId + '&ref=' + ref)
-    .then(() => {
-      window.location.href = destino;
-    })
-    .catch(() => {
-      window.location.href = destino;
-    });
-</script>
-
+    // Registrar no Apps Script
+    fetch('https://script.google.com/macros/s/AKfycbyFriYIIwGudH0wRNLtD-6iK01sCvklQslRiEeRFdWuuKUWxQpKaTXFSQyavLBGkfyA/exec?usuario=' + usuarioId + '&ref=' + ref)
+.then(() => {
+        window.location.href = destino;
+      })
+      .catch(() => {
+        // Se falhar, ainda assim redireciona
+        window.location.href = destino;
+      });
+  </script>
 </body>
 </html>
