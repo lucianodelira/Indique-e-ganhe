@@ -18,7 +18,7 @@
     const destino = "https://aplicativo.acertosclub.com?ref=" + usuarioId;
 
     // Registrar no Apps Script
-    fetch('https://script.google.com/macros/s/AKfycbzpRTv3g_HcbrIdXsLtmc_kmFdI6MBTro8GhucaUQr7VE0HHyKJXUZZ7MvAzogrz3wz/exec?usuario=' + usuarioId + '&ref=' + ref)
+    fetch('https://script.google.com/macros/s/AKfycbzpRTv3g_HcbrIdXsLtmc_kmFdI6MBTro8GhucaUQr7VE0HHyKJXUZZ7MvAzogrz3wz/exec' + usuarioId + '&ref=' + ref)
       .then(() => {
         window.location.href = destino;
       })
