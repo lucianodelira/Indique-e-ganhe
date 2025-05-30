@@ -1,37 +1,30 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <title>Ranking de Créditos</title>
-  <style>
-    body { font-family: Arial; padding: 20px; text-align: center; }
-    table { width: 80%; margin: auto; border-collapse: collapse; }
-    th, td { padding: 10px; border: 1px solid #ccc; }
-    th { background-color: #eee; }
-  </style>
+  <meta charset="UTF-8">
+  <title>Redirecionando...</title>
 </head>
 <body>
-  <h1>Ranking dos Usuários com Mais Créditos</h1>
-  <table id="ranking">
-    <thead>
-      <tr>
-        <th>Usuário</th>
-        <th>Créditos</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+  Redirecionando para o aplicativo...
 
   <script>
-    fetch('https://script.google.com/macros/s/AKfycbzpRTv3g_HcbrIdXsLtmc_kmFdI6MBTro8GhucaUQr7VE0HHyKJXUZZ7MvAzogrz3wz/exec?ranking=true')
-      .then(res => res.json())
-      .then(data => {
-        const tbody = document.querySelector("#ranking tbody");
-        data.ranking.forEach(item => {
-          const row = document.createElement("tr");
-          row.innerHTML = `<td>${item.usuario}</td><td>${item.creditos}</td>`;
-          tbody.appendChild(row);
-        });
+    const urlParams = new URLSearchParams(window.location.search);
+    const ref = urlParams.get('ref') || 'anonimo';
+
+    // Gerar novo ID de usuário
+    const usuarioId = 'user_' + Math.random().toString(36).substr(2, 9);
+    localStorage.setItem('usuarioId', usuarioId);
+
+    const destino = "https://aplicativo.acertosclub.com?ref=" + usuarioId;
+
+    // Registrar no Apps Script
+    fetch('https://script.google.com/macros/s/AKfycbzpRTv3g_HcbrIdXsLtmc_kmFdI6MBTro8GhucaUQr7VE0HHyKJXUZZ7MvAzogrz3wz/exec?usuario=' + usuarioId + '&ref=' + ref)
+      .then(() => {
+        window.location.href = destino;
+      })
+      .catch(() => {
+        // Se falhar, ainda assim redireciona
+        window.location.href = destino;
       });
   </script>
 </body>
