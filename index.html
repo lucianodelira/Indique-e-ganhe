@@ -86,18 +86,18 @@
         window.location.href = 'pagina-link-indicador.html?user=' + encodeURIComponent(nomeSalvo);
       }
     }
+// Função que salva o nome no Google Sheets via Apps Script
+async function salvarNomeIndicador(nome) {
+  try {
+    const response = await fetch(`${WEBAPP_URL}?usuario=${encodeURIComponent(nome)}`);
+    const data = await response.json();
+    return data.status === 'OK';
+  } catch (error) {
+    console.error('Erro ao salvar nome:', error);
+    return false;
+  }
+}
 
-    // Função que salva o nome no Google Sheets via Apps Script
-    async function salvarNomeIndicador(nome) {
-      try {
-        const response = await fetch(`${WEBAPP_URL}?nome=${encodeURIComponent(nome)}`);
-        const data = await response.json();
-        return data.success;
-      } catch (error) {
-        console.error('Erro ao salvar nome:', error);
-        return false;
-      }
-    }
 
     document.getElementById('btnEntrar').addEventListener('click', async () => {
       const nome = document.getElementById('nomeIndicador').value.trim();
