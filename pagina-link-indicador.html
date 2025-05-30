@@ -70,6 +70,46 @@
     document.execCommand('copy');
     alert("Link copiado!");
   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const tempo = new Date().getTime();
+fetch(`${WEBAPP_URL}?usuario=${usuarioId}&_=${tempo}`)
+  .then(res => res.json())
+  .then(data => {
+    if (data.creditos !== undefined) {
+      document.getElementById('creditos').innerText = data.creditos;
+    } else if (data.erro) {
+      alert('Erro: ' + data.erro);
+    }
+  })
+  .catch(err => {
+    console.error('Erro ao buscar créditos:', err);
+  });
+
+
+
+
+
+
+
+
+
+
+
+
+  
 </script>
 
 
