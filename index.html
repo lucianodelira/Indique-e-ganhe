@@ -1,39 +1,128 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bem-vindo</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Site com Banner Indicador</title>
+  <style>
+    /* Banner full screen */
+    #bannerIndicador {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.85);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      z-index: 9999;
+      text-align: center;
+    }
+    #bannerIndicador h1 {
+      font-size: 2.5em;
+      margin-bottom: 15px;
+    }
+    #bannerIndicador p {
+      font-size: 1.2em;
+      margin-bottom: 30px;
+      max-width: 400px;
+    }
+    #bannerIndicador input[type="text"] {
+      padding: 15px;
+      font-size: 1.1em;
+      border-radius: 8px;
+      border: none;
+      width: 80%;
+      max-width: 350px;
+      margin-bottom: 20px;
+    }
+    #bannerIndicador button {
+      padding: 15px 40px;
+      font-size: 1.2em;
+      border: none;
+      border-radius: 8px;
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    #bannerIndicador button:hover {
+      background-color: #45a049;
+    }
+  </style>
 </head>
 <body>
-  <h1>Bem-vindo ao site!</h1>
-  <p>Conteúdo do site aqui...</p>
+  <!-- Seu conteúdo do site aqui -->
+  <div id="conteudoSite" style="padding: 20px;">
+    <h1>Bem-vindo ao site!</h1>
+    <p>Conteúdo do site aqui...</p>
+  </div>
 
-  <h2>Indique um amigo e ganhe prêmios!</h2>
-  <p>Preencha seu nome para começar a indicar e ganhar créditos para prêmios incríveis.</p>
-
-  <form id="formulario">
-    <input type="text" id="nomeUsuario" placeholder="Digite seu nome" required>
-    <button type="submit">Entrar</button>
-  </form>
+  <!-- Banner Indicador -->
+  <div id="bannerIndicador" style="display:none;">
+    <h1>Indique um amigo e ganhe prêmios!</h1>
+    <p>Preencha seu nome para começar a indicar e ganhar créditos para prêmios incríveis.</p>
+    <input type="text" id="nomeIndicador" placeholder="Digite seu nome" />
+    <button id="btnEntrar">Entrar</button>
+  </div>
 
   <script>
-    // Captura o parâmetro 'ref' da URL, se existir
-    const urlParams = new URLSearchParams(window.location.search);
-    const ref = urlParams.get('ref') || '';
+  const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbyFriYIIwGudH0wRNLtD-6iK01sCvklQslRiEeRFdWuuKUWxQpKaTXFSQyavLBGkfyA/exec';
 
-    document.getElementById('formulario').addEventListener('submit', (e) => {
-      e.preventDefault();
-      const usuario = document.getElementById('nomeUsuario').value.trim();
-      if (!usuario) {
-        alert('Por favor, insira seu nome.');
-        return;
-      }
-      // Armazena o nome do usuário no localStorage
-      localStorage.setItem('usuario', usuario);
-      // Redireciona para a página de indicação, incluindo o ref se existir
-      window.location.href = `pagina-link-indicador.html${ref ? '?ref=' + encodeURIComponent(ref) : ''}`;
-    });
-  </script>
+  // Gera ou pega o usuarioId do localStorage
+  let usuarioId = localStorage.getItem('usuarioId');
+  if (!usuarioId) {
+    usuarioId = 'user_' + Math.random().toString(36).substring(2, 10);
+    localStorage.setItem('usuarioId', usuarioId);
+  }
+
+  function verificarBanner() {
+    const nomeSalvo = localStorage.getItem('nomeIndicador');
+    if (!nomeSalvo) {
+      document.getElementById('bannerIndicador').style.display = 'flex';
+      document.getElementById('conteudoSite').style.filter = 'blur(5px)';
+    } else {
+      document.getElementById('bannerIndicador').style.display = 'none';
+      document.getElementById('conteudoSite').style.filter = 'none';
+      // Redireciona para página de indicação usando o usuarioId (não só o nome)
+      window.location.href = 'pagina-link-indicador.html?user=' + encodeURIComponent(usuarioId);
+    }
+  }
+
+  async function salvarNomeIndicador(nome, usuarioId) {
+    try {
+      const response = await fetch(WEBAPP_URL, {
+        method: 'POST',
+        body: JSON.stringify({ nome, usuarioId }),
+        headers: { 'Content-Type': 'application/json' }
+      });
+      const data = await response.json();
+      return data.status === 'OK';
+    } catch (error) {
+      console.error('Erro ao salvar nome:', error);
+      return false;
+    }
+  }
+
+  document.getElementById('btnEntrar').addEventListener('click', async () => {
+    const nome = document.getElementById('nomeIndicador').value.trim();
+    if (!nome) {
+      alert('Por favor, digite seu nome.');
+      return;
+    }
+    const sucesso = await salvarNomeIndicador(nome, usuarioId);
+    if (sucesso) {
+      localStorage.setItem('nomeIndicador', nome);
+      window.location.href = 'pagina-link-indicador.html?user=' + encodeURIComponent(usuarioId);
+    } else {
+      alert('Erro ao salvar seu nome. Tente novamente.');
+    }
+  });
+
+  verificarBanner();
+</script>
+
 </body>
 </html>
