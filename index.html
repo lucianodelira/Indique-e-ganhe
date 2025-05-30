@@ -86,7 +86,8 @@
         window.location.href = 'pagina-link-indicador.html?user=' + encodeURIComponent(nomeSalvo);
       }
     }
-// Função que salva o nome no Google Sheets via Apps Script
+
+    // Função que salva o nome no Google Sheets via Apps Script
 async function salvarNomeIndicador(nome) {
   try {
     const response = await fetch(`${WEBAPP_URL}?usuario=${encodeURIComponent(nome)}`);
