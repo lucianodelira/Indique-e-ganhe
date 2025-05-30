@@ -39,7 +39,7 @@
       window.location.origin + window.location.pathname.replace('index.html', '') + "index.html?ref=" + usuarioId;
 
     const jaVisitou = localStorage.getItem('jaVisitou');
-    const endpoint = 'https://script.google.com/macros/s/AKfycbyFriYIIwGudH0wRNLtD-6iK01sCvklQslRiEeRFdWuuKUWxQpKaTXFSQyavLBGkfyA/exec';
+    const endpoint = 'https://script.google.com/macros/s/AKfycbzpRTv3g_HcbrIdXsLtmc_kmFdI6MBTro8GhucaUQr7VE0HHyKJXUZZ7MvAzogrz3wz/exec';
 
     if (!jaVisitou) {
       fetch(`${endpoint}?usuario=${usuarioId}&ref=${ref}`)
