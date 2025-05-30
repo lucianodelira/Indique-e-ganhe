@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Redirecionando...</title>
+</head>
+<body>
+  Redirecionando para o aplicativo...
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const ref = urlParams.get('ref') || 'anonimo';
+
+    // Gerar novo ID de usuário
+    const usuarioId = 'user_' + Math.random().toString(36).substr(2, 9);
+    localStorage.setItem('usuarioId', usuarioId);
+
+    const destino = "https://aplicativo.acertosclub.com?ref=" + usuarioId;
+
+    // Registrar no Apps Script
+    fetch('https://script.google.com/macros/s/AKfycbyFriYIIwGudH0wRNLtD-6iK01sCvklQslRiEeRFdWuuKUWxQpKaTXFSQyavLBGkfyA/exec?usuario=' + usuarioId + '&ref=' + ref)
+.then(() => {
+        window.location.href = destino;
+      })
+      .catch(() => {
+        // Se falhar, ainda assim redireciona
+        window.location.href = destino;
+      });
+  </script>
+</body>
+</html>
