@@ -28,20 +28,25 @@
 <script>
   const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbyFriYIIwGudH0wRNLtD-6iK01sCvklQslRiEeRFdWuuKUWxQpKaTXFSQyavLBGkfyA/exec';
 
-  const urlParams = new URLSearchParams(window.location.search);
-  const ref = urlParams.get('ref') || 'anonimo';
-
-  let usuarioId = localStorage.getItem('usuarioId');
-  if (!usuarioId) {
-    usuarioId = 'user_' + Math.random().toString(36).substr(2, 9);
-    localStorage.setItem('usuarioId', usuarioId);
+  function getUsuarioId() {
+    let id = localStorage.getItem('usuarioId');
+    if (!id) {
+      id = 'user_' + Math.random().toString(36).substr(2, 9);
+      localStorage.setItem('usuarioId', id);
+    }
+    return id;
   }
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const usuarioIdURL = urlParams.get('usuario'); // Pega parâmetro 'usuario' da URL
+
+  // Usa usuário da URL se existir, senão cria/usa o localStorage
+  const usuarioId = usuarioIdURL || getUsuarioId();
 
   document.getElementById('linkConvite').value =
     window.location.origin + '/Indique-e-ganhe/r.html?ref=' + usuarioId;
 
-  // Aqui começa o seu fetch atualizado
-  fetch(`${WEBAPP_URL}?usuario=${usuarioId}&ref=${ref}`)
+  fetch(`${WEBAPP_URL}?usuario=${usuarioId}`)
     .then(res => res.json())
     .then(data => {
       if (data.creditos !== undefined) {
