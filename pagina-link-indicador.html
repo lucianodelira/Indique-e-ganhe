@@ -5,15 +5,116 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Compartilhe e Ganhe</title>
   <style>
-    body { font-family: Arial, sans-serif; text-align: center; padding: 30px; }
-    .container { max-width: 600px; margin: auto; }
-    .creditos { font-size: 24px; margin: 20px 0; }
-    input, button { padding: 10px; margin: 10px; width: 80%; max-width: 400px; }
-    .link-box { background: #f0f0f0; padding: 10px; border-radius: 8px; }
+    :root {
+      --cor-primaria: #4CAF50;
+      --cor-secundaria: #ffffff;
+      --cor-texto: #333;
+      --cor-botao: #388E3C;
+      --cor-box: #f9f9f9;
+      --sombra: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #e0f7fa, #a5d6a7);
+      color: var(--cor-texto);
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: auto;
+      background: var(--cor-secundaria);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: var(--sombra);
+      text-align: center;
+    }
+
+    h1 {
+      color: var(--cor-primaria);
+      margin-bottom: 10px;
+    }
+
+    .creditos {
+      font-size: 22px;
+      margin: 20px 0;
+    }
+
+    input, button {
+      padding: 12px;
+      margin: 10px 0;
+      width: 100%;
+      max-width: 100%;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+
+    button {
+      background: var(--cor-botao);
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #2e7d32;
+    }
+
+    .link-box {
+      background: var(--cor-box);
+      padding: 15px;
+      border-radius: 10px;
+      margin-top: 10px;
+      box-shadow: var(--sombra);
+    }
+
+    .roleta-container {
+      margin-top: 30px;
+      filter: blur(8px);
+      opacity: 0.6;
+      transition: all 0.5s ease;
+    }
+
+    .roleta-container.ativa {
+      filter: none;
+      opacity: 1;
+    }
+
+    .roleta {
+      width: 100%;
+      max-width: 300px;
+      margin: auto;
+      border-radius: 50%;
+      background: conic-gradient(#ff9800, #ffc107, #ffeb3b, #ff9800);
+      height: 300px;
+      animation: girar 5s infinite linear;
+      box-shadow: var(--sombra);
+    }
+
+    @keyframes girar {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    p {
+      margin-top: 15px;
+      font-size: 15px;
+    }
   </style>
 </head>
 <body>
-  <div class="container">
+
+
+<div class="container">
     <h1>Compartilhe e Ganhe</h1>
     <p>Ganhe créditos indicando amigos!</p>
     <div class="creditos">
@@ -21,13 +122,32 @@
     </div>
     <div class="link-box">
       Seu link de convite:<br />
-      <input type="text" id="linkConvite" readonly />
+      <input type="text" id="linkConvite" readonly value="https://seulink.com/convite123"/>
     </div>
-    <button onclick="copiarLink()">Copiar Link</button>
+    <button onclick="copiarLink()">📋 Copiar Link</button>
     <p>Convide amigos para atingir 100 créditos e desbloquear prêmios.</p>
+
+    <!-- Roleta Oculta -->
+    <div class="roleta-container" id="roletaContainer">
+      <div class="roleta"></div>
+      <p><strong>Prêmio Desbloqueado!</strong> Gire para ver o que você ganhou 🎁</p>
+    </div>
   </div>
 
+
+
+
+
 <script>
+
+ // Exibe roleta se atingir 100 créditos
+    if (creditos >= 100) {
+      document.getElementById("roletaContainer").classList.add("ativa");
+    }
+
+
+
+  
   const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbyFriYIIwGudH0wRNLtD-6iK01sCvklQslRiEeRFdWuuKUWxQpKaTXFSQyavLBGkfyA/exec';
 
   function getUsuarioId() {
