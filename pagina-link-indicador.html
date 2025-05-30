@@ -46,8 +46,9 @@
   const usuarioId = usuarioIdURL || getUsuarioId();
 
   // Atualiza campo do link de convite com o usuário atual
-  document.getElementById('linkConvite').value =
-    window.location.origin + '/Indique-e-ganhe/pagina-link-indicador.html?user=' + usuarioId;
+document.getElementById('linkConvite').value =
+  window.location.origin + '/Indique-e-ganhe/r.html?ref=' + usuarioId;
+
 
   // Busca créditos da API para esse usuário
   fetch(`${WEBAPP_URL}?usuario=${usuarioId}`)
