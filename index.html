@@ -68,56 +68,57 @@
     <button id="btnEntrar">Entrar</button>
   </div>
 
- <script>
-  const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbyFriYIIwGudH0wRNLtD-6iK01sCvklQslRiEeRFdWuuKUWxQpKaTXFSQyavLBGkfyA/exec';
+  <script>
+    // URL do seu Google Apps Script WebApp que salva na planilha
+    const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbyFriYIIwGudH0wRNLtD-6iK01sCvklQslRiEeRFdWuuKUWxQpKaTXFSQyavLBGkfyA/exec'; // substitua pelo seu URL
 
-  function getUsuarioId() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const id = (urlParams.get('user') || '').trim();
-    return id;
-  }
-
-  async function buscarCreditos(usuarioId) {
-    const url = `${WEBAPP_URL}?usuario=${encodeURIComponent(usuarioId)}&_=${Date.now()}`;
-    try {
-      const res = await fetch(url);
-      const data = await res.json();
-
-      // 🔧 Corrigido: verifica se os créditos vieram
-      if (data.status === 'OK' && data.creditos !== undefined) {
-        document.getElementById('creditos').innerText = data.creditos;
-      } else if (data.erro) {
-        document.getElementById('creditos').innerText = 'Erro: ' + data.erro;
+    // Função para mostrar ou esconder banner baseado no localStorage
+    function verificarBanner() {
+      const nomeSalvo = localStorage.getItem('nomeIndicador');
+      if (!nomeSalvo) {
+        document.getElementById('bannerIndicador').style.display = 'flex';
+        document.getElementById('conteudoSite').style.filter = 'blur(5px)';
       } else {
-        document.getElementById('creditos').innerText = 'Créditos não encontrados.';
+        // Já tem nome salvo, pode mostrar o conteúdo normal
+        document.getElementById('bannerIndicador').style.display = 'none';
+        document.getElementById('conteudoSite').style.filter = 'none';
+        // Redireciona direto para página do link de indicação
+        window.location.href = 'pagina-link-indicador.html?user=' + encodeURIComponent(nomeSalvo);
       }
-    } catch (error) {
-      document.getElementById('creditos').innerText = 'Erro de conexão';
-      console.error('Erro ao buscar créditos:', error);
     }
+
+    // Função que salva o nome no Google Sheets via Apps Script
+async function salvarNomeIndicador(nome) {
+  try {
+    const response = await fetch(`${WEBAPP_URL}?usuario=${encodeURIComponent(nome)}`);
+    const data = await response.json();
+    return data.status === 'OK';
+  } catch (error) {
+    console.error('Erro ao salvar nome:', error);
+    return false;
   }
+}
 
-  function copiarLink() {
-    const input = document.getElementById('linkConvite');
-    input.select();
-    input.setSelectionRange(0, 99999);
-    document.execCommand('copy');
-    alert("Link copiado!");
-  }
 
-  // Ao carregar a página
-  const usuarioId = getUsuarioId();
+    document.getElementById('btnEntrar').addEventListener('click', async () => {
+      const nome = document.getElementById('nomeIndicador').value.trim();
+      if (!nome) {
+        alert('Por favor, digite seu nome.');
+        return;
+      }
+      // Salva no Google Sheets via API
+      const sucesso = await salvarNomeIndicador(nome);
+      if (sucesso) {
+        // Salva localmente para não mostrar banner outra vez
+        localStorage.setItem('nomeIndicador', nome);
+        // Redireciona para a página de link de indicação
+        window.location.href = 'pagina-link-indicador.html?user=' + encodeURIComponent(nome);
+      } else {
+        alert('Erro ao salvar seu nome. Tente novamente.');
+      }
+    });
 
-  if (!usuarioId) {
-    alert('Usuário não identificado.');
-  } else {
-    // Atualiza o campo com o link de convite
-    document.getElementById('linkConvite').value =
-      window.location.origin + '/Indique-e-ganhe/r.html?ref=' + usuarioId;
-
-    buscarCreditos(usuarioId);
-  }
-</script>
-
+    verificarBanner();
+  </script>
 </body>
 </html>
