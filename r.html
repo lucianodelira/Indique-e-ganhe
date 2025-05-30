@@ -1,19 +1,31 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <title>Redirecionando...</title>
-  <meta http-equiv="refresh" content="0;url=https://aplicativo.acertosclub.com?ref=" id="meta-redirect">
-  <script>
-    const urlParams = new URLSearchParams(window.location.search);
-    const ref = urlParams.get('ref') || 'anonimo';
-    const destino = "https://aplicativo.acertosclub.com?ref=" + ref;
-    document.getElementById("meta-redirect").setAttribute("content", "0;url=" + destino);
-    window.location.href = destino;
-  </script>
 </head>
 <body>
   Redirecionando para o aplicativo...
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const ref = urlParams.get('ref') || 'anonimo';
+
+    // Gerar novo ID de usuário
+    const usuarioId = 'user_' + Math.random().toString(36).substr(2, 9);
+    localStorage.setItem('usuarioId', usuarioId);
+
+    const destino = "https://aplicativo.acertosclub.com?ref=" + usuarioId;
+
+    // Registrar no Apps Script
+    fetch('https://script.google.com/macros/s/AKfycbyFriYIIwGudH0wRNLtD-6iK01sCvklQslRiEeRFdWuuKUWxQpKaTXFSQyavLBGkfyA/exec?usuario=' + usuarioId + '&ref=' + ref)
+      .then(() => {
+        window.location.href = destino;
+      })
+      .catch(() => {
+        // Se falhar, ainda assim redireciona
+        window.location.href = destino;
+      });
+  </script>
 </body>
 </html>
