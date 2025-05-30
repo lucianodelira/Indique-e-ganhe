@@ -26,91 +26,46 @@
   </div>
 
 <script>
-  const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbyFriYIIwGudH0wRNLtD-6iK01sCvklQslRiEeRFdWuuKUWxQpKaTXFSQyavLBGkfyA/exec';
+const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbyFriYIIwGudH0wRNLtD-6iK01sCvklQslRiEeRFdWuuKUWxQpKaTXFSQyavLBGkfyA/exec';
 
-  // Função para pegar ou criar um id local único
-  function getUsuarioId() {
-    let id = localStorage.getItem('usuarioId');
-    if (!id) {
-      id = 'user_' + Math.random().toString(36).substr(2, 9);
-      localStorage.setItem('usuarioId', id);
-    }
-    return id;
-  }
-
-  // Pega parâmetro 'user' da URL
+// Função para extrair "user" da URL
+function getUsuarioFromURL() {
   const urlParams = new URLSearchParams(window.location.search);
-  const usuarioIdURL = urlParams.get('user'); // Ex: ?user=user_abc123
-  const usuarioId = usuarioIdURL || getUsuarioId();
+  return (urlParams.get('user') || '').trim();
+}
 
-  // Atualiza campo do link de convite com o usuário atual
-  document.getElementById('linkConvite').value =
-    window.location.origin + '/Indique-e-ganhe/r.html?ref=' + usuarioId;
-
-  // Busca créditos da API para esse usuário
-  fetch(`${WEBAPP_URL}?usuario=${usuarioId}`)
-    .then(res => res.json())
-    .then(data => {
-      if (data.creditos !== undefined) {
-        document.getElementById('creditos').innerText = data.creditos;
-        console.log('Créditos carregados:', data.creditos);
-      } else if (data.erro) {
-        alert('Erro: ' + data.erro);
-      }
-    })
-    .catch(err => {
-      console.error('Erro ao buscar créditos:', err);
-    });
-
-  // Função para copiar link do convite
-  function copiarLink() {
-    const input = document.getElementById('linkConvite');
-    input.select();
-    input.setSelectionRange(0, 99999);
-    document.execCommand('copy');
-    alert("Link copiado!");
+// Função que busca os créditos na API do Apps Script
+async function atualizarCreditos() {
+  const usuario = getUsuarioFromURL();
+  if (!usuario) {
+    document.getElementById('creditos').innerText = 'Usuário não informado.';
+    return;
   }
 
+  try {
+    const response = await fetch(`${WEBAPP_URL}?usuario=${encodeURIComponent(usuario)}&_=${Date.now()}`);
+    const data = await response.json();
 
-
-
-
-
-
-
-
-
-
-
-
-
-const tempo = new Date().getTime();
-fetch(`${WEBAPP_URL}?usuario=${usuarioId}&_=${tempo}`)
-  .then(res => res.json())
-  .then(data => {
-    if (data.creditos !== undefined) {
-      document.getElementById('creditos').innerText = data.creditos;
+    if (data.status === 'OK' && data.usuario === usuario) {
+      document.getElementById('creditos').innerText = `${data.creditos} créditos`;
     } else if (data.erro) {
-      alert('Erro: ' + data.erro);
+      document.getElementById('creditos').innerText = `Erro: ${data.erro}`;
+    } else {
+      document.getElementById('creditos').innerText = 'Erro ao buscar créditos.';
     }
-  })
-  .catch(err => {
-    console.error('Erro ao buscar créditos:', err);
-  });
+  } catch (error) {
+    document.getElementById('creditos').innerText = 'Erro na conexão.';
+    console.error(error);
+  }
+}
 
+// Atualiza os créditos ao carregar a página
+atualizarCreditos();
 
-
-
-
-
-
-
-
-
-
-
-  
+// (Opcional) Atualiza a cada 10 segundos para ver alterações em tempo real
+setInterval(atualizarCreditos, 10000);
 </script>
+
 
 
 </body>
