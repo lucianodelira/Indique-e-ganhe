@@ -37,7 +37,8 @@
     }
 
     document.getElementById('linkConvite').value =
-      window.location.origin + "/r.html?ref=" + usuarioId;
+  window.location.origin + window.location.pathname.replace('index.html', '') + "r.html?ref=" + usuarioId;
+
 
     fetch('https://script.google.com/macros/s/AKfycbyFriYIIwGudH0wRNLtD-6iK01sCvklQslRiEeRFdWuuKUWxQpKaTXFSQyavLBGkfyA/exec?usuario=' + usuarioId + '&ref=' + ref)
       .then(res => res.json())
