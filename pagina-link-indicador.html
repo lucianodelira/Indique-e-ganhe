@@ -16,7 +16,9 @@
   <div class="container">
     <h1>Compartilhe e Ganhe</h1>
     <p>Ganhe créditos indicando amigos!</p>
-    <div class="creditos">Você tem <strong id="creditos">0</strong> créditos.</div>
+    <div class="creditos">
+      Você tem <strong id="creditos">Carregando...</strong> créditos.
+    </div>
     <div class="link-box">
       Seu link de convite:<br />
       <input type="text" id="linkConvite" readonly />
@@ -28,41 +30,29 @@
 <script>
   const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbyFriYIIwGudH0wRNLtD-6iK01sCvklQslRiEeRFdWuuKUWxQpKaTXFSQyavLBGkfyA/exec';
 
-  // Função para pegar ou criar um id local único
   function getUsuarioId() {
-    let id = localStorage.getItem('usuarioId');
-    if (!id) {
-      id = 'user_' + Math.random().toString(36).substr(2, 9);
-      localStorage.setItem('usuarioId', id);
-    }
+    const urlParams = new URLSearchParams(window.location.search);
+    const id = (urlParams.get('user') || localStorage.getItem('usuarioId') || "").trim();
     return id;
   }
 
-  // Pega parâmetro 'user' da URL
-  const urlParams = new URLSearchParams(window.location.search);
-  const usuarioIdURL = urlParams.get('user'); // Ex: ?user=user_abc123
-  const usuarioId = usuarioIdURL || getUsuarioId();
-
-  // Atualiza campo do link de convite com o usuário atual
-  document.getElementById('linkConvite').value =
-    window.location.origin + '/Indique-e-ganhe/r.html?ref=' + usuarioId;
-
-  // Busca créditos da API para esse usuário
-  fetch(`${WEBAPP_URL}?usuario=${usuarioId}`)
-    .then(res => res.json())
-    .then(data => {
-      if (data.creditos !== undefined) {
+  async function buscarCreditos(usuarioId) {
+    const url = `${WEBAPP_URL}?usuario=${encodeURIComponent(usuarioId)}&_=${Date.now()}`;
+    try {
+      const res = await fetch(url);
+      const data = await res.json();
+      if (data.status === 'OK' && data.usuario === usuarioId) {
         document.getElementById('creditos').innerText = data.creditos;
-        console.log('Créditos carregados:', data.creditos);
-      } else if (data.erro) {
-        alert('Erro: ' + data.erro);
+      } else {
+        document.getElementById('creditos').innerText = 'Erro ao carregar';
+        console.error('Resposta inesperada:', data);
       }
-    })
-    .catch(err => {
-      console.error('Erro ao buscar créditos:', err);
-    });
+    } catch (error) {
+      document.getElementById('creditos').innerText = 'Erro de conexão';
+      console.error('Erro ao buscar créditos:', error);
+    }
+  }
 
-  // Função para copiar link do convite
   function copiarLink() {
     const input = document.getElementById('linkConvite');
     input.select();
@@ -71,47 +61,20 @@
     alert("Link copiado!");
   }
 
+  // Execução ao carregar
+  const usuarioId = getUsuarioId();
 
+  if (!usuarioId) {
+    alert('Usuário não identificado.');
+  } else {
+    document.getElementById('linkConvite').value =
+      window.location.origin + '/Indique-e-ganhe/r.html?ref=' + usuarioId;
 
+    buscarCreditos(usuarioId);
 
-
-
-
-
-
-
-
-
-
-
-const tempo = new Date().getTime();
-fetch(`${WEBAPP_URL}?usuario=${usuarioId}&_=${tempo}`)
-  .then(res => res.json())
-  .then(data => {
-    if (data.creditos !== undefined) {
-      document.getElementById('creditos').innerText = data.creditos;
-    } else if (data.erro) {
-      alert('Erro: ' + data.erro);
-    }
-  })
-  .catch(err => {
-    console.error('Erro ao buscar créditos:', err);
-  });
-
-
-
-
-
-
-
-
-
-
-
-
-  
+    // (Opcional) Atualizar a cada 10 segundos se quiser detectar em tempo real
+    // setInterval(() => buscarCreditos(usuarioId), 10000);
+  }
 </script>
-
-
 </body>
 </html>
