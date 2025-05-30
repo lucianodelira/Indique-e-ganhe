@@ -25,37 +25,43 @@
     <p>Convide amigos para atingir 100 créditos e desbloquear prêmios.</p>
   </div>
 
-  <script>
-    const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbyFriYIIwGudH0wRNLtD-6iK01sCvklQslRiEeRFdWuuKUWxQpKaTXFSQyavLBGkfyA/exec'; // substitua aqui
+<script>
+  const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbyFriYIIwGudH0wRNLtD-6iK01sCvklQslRiEeRFdWuuKUWxQpKaTXFSQyavLBGkfyA/exec';
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const ref = urlParams.get('ref') || 'anonimo';
+  const urlParams = new URLSearchParams(window.location.search);
+  const ref = urlParams.get('ref') || 'anonimo';
 
-    let usuarioId = localStorage.getItem('usuarioId');
-    if (!usuarioId) {
-      usuarioId = 'user_' + Math.random().toString(36).substr(2, 9);
-      localStorage.setItem('usuarioId', usuarioId);
-    }
-document.getElementById('linkConvite').value =
-  window.location.origin + '/Indique-e-ganhe/r.html?ref=' + usuarioId;
+  let usuarioId = localStorage.getItem('usuarioId');
+  if (!usuarioId) {
+    usuarioId = 'user_' + Math.random().toString(36).substr(2, 9);
+    localStorage.setItem('usuarioId', usuarioId);
+  }
 
+  document.getElementById('linkConvite').value =
+    window.location.origin + '/Indique-e-ganhe/r.html?ref=' + usuarioId;
 
-    fetch(`${WEBAPP_URL}?usuario=${usuarioId}&ref=${ref}`)
-      .then(res => res.json())
-      .then(data => {
+  // Aqui começa o seu fetch atualizado
+  fetch(`${WEBAPP_URL}?usuario=${usuarioId}&ref=${ref}`)
+    .then(res => res.json())
+    .then(data => {
+      if (data.creditos !== undefined) {
         document.getElementById('creditos').innerText = data.creditos;
-      })
-      .catch(err => {
-        console.error('Erro ao buscar créditos:', err);
-      });
+      } else if (data.erro) {
+        alert('Erro: ' + data.erro);
+      }
+    })
+    .catch(err => {
+      console.error('Erro ao buscar créditos:', err);
+    });
 
-    function copiarLink() {
-      const input = document.getElementById('linkConvite');
-      input.select();
-      input.setSelectionRange(0, 99999);
-      document.execCommand('copy');
-      alert("Link copiado!");
-    }
-  </script>
+  function copiarLink() {
+    const input = document.getElementById('linkConvite');
+    input.select();
+    input.setSelectionRange(0, 99999);
+    document.execCommand('copy');
+    alert("Link copiado!");
+  }
+</script>
+
 </body>
 </html>
