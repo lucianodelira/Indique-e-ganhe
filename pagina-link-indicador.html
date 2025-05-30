@@ -36,9 +36,9 @@
       usuarioId = 'user_' + Math.random().toString(36).substr(2, 9);
       localStorage.setItem('usuarioId', usuarioId);
     }
+document.getElementById('linkConvite').value =
+  window.location.origin + '/Indique-e-ganhe/r.html?ref=' + usuarioId;
 
-    document.getElementById('linkConvite').value =
-      window.location.origin + window.location.pathname.replace('index.html', '') + "r.html?ref=" + usuarioId;
 
     fetch(`${WEBAPP_URL}?usuario=${usuarioId}&ref=${ref}`)
       .then(res => res.json())
