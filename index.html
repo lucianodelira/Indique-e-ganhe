@@ -39,7 +39,7 @@
     document.getElementById('linkConvite').value =
       window.location.origin + "/r.html?ref=" + usuarioId;
 
-    fetch('https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec?usuario=' + usuarioId + '&ref=' + ref)
+    fetch('https://script.google.com/macros/s/AKfycbyFriYIIwGudH0wRNLtD-6iK01sCvklQslRiEeRFdWuuKUWxQpKaTXFSQyavLBGkfyA/exec?usuario=' + usuarioId + '&ref=' + ref)
       .then(res => res.json())
       .then(data => {
         document.getElementById('creditos').innerText = data.creditos;
