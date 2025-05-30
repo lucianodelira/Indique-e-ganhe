@@ -2,30 +2,19 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Redirecionando...</title>
 </head>
 <body>
-  Redirecionando para o aplicativo...
+  <p>Redirecionando para o aplicativo...</p>
 
   <script>
+    // Captura o parâmetro 'ref' da URL
     const urlParams = new URLSearchParams(window.location.search);
-    const ref = urlParams.get('ref') || 'anonimo';
+    const ref = urlParams.get('ref') || '';
 
-    // Gerar novo ID de usuário
-    const usuarioId = 'user_' + Math.random().toString(36).substr(2, 9);
-    localStorage.setItem('usuarioId', usuarioId);
-
-    const destino = "https://aplicativo.acertosclub.com?ref=" + usuarioId;
-
-    // Registrar no Apps Script
-    fetch('https://script.google.com/macros/s/AKfycbyFriYIIwGudH0wRNLtD-6iK01sCvklQslRiEeRFdWuuKUWxQpKaTXFSQyavLBGkfyA/exec?usuario=' + usuarioId + '&ref=' + ref)
-      .then(() => {
-        window.location.href = destino;
-      })
-      .catch(() => {
-        // Se falhar, ainda assim redireciona
-        window.location.href = destino;
-      });
+    // Redireciona para index.html, mantendo o ref
+    window.location.href = `index.html${ref ? '?ref=' + encodeURIComponent(ref) : ''}`;
   </script>
 </body>
 </html>
