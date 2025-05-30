@@ -69,56 +69,60 @@
   </div>
 
   <script>
-    // URL do seu Google Apps Script WebApp que salva na planilha
-    const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbyFriYIIwGudH0wRNLtD-6iK01sCvklQslRiEeRFdWuuKUWxQpKaTXFSQyavLBGkfyA/exec'; // substitua pelo seu URL
+  const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbyFriYIIwGudH0wRNLtD-6iK01sCvklQslRiEeRFdWuuKUWxQpKaTXFSQyavLBGkfyA/exec';
 
-    // Função para mostrar ou esconder banner baseado no localStorage
-    function verificarBanner() {
-      const nomeSalvo = localStorage.getItem('nomeIndicador');
-      if (!nomeSalvo) {
-        document.getElementById('bannerIndicador').style.display = 'flex';
-        document.getElementById('conteudoSite').style.filter = 'blur(5px)';
-      } else {
-        // Já tem nome salvo, pode mostrar o conteúdo normal
-        document.getElementById('bannerIndicador').style.display = 'none';
-        document.getElementById('conteudoSite').style.filter = 'none';
-        // Redireciona direto para página do link de indicação
-        window.location.href = 'pagina-link-indicador.html?user=' + encodeURIComponent(nomeSalvo);
-      }
-    }
-
-    // Função que salva o nome no Google Sheets via Apps Script
-async function salvarNomeIndicador(nome) {
-  try {
-    const response = await fetch(`${WEBAPP_URL}?usuario=${encodeURIComponent(nome)}`);
-    const data = await response.json();
-    return data.status === 'OK';
-  } catch (error) {
-    console.error('Erro ao salvar nome:', error);
-    return false;
+  // Gera ou pega o usuarioId do localStorage
+  let usuarioId = localStorage.getItem('usuarioId');
+  if (!usuarioId) {
+    usuarioId = 'user_' + Math.random().toString(36).substring(2, 10);
+    localStorage.setItem('usuarioId', usuarioId);
   }
-}
 
+  function verificarBanner() {
+    const nomeSalvo = localStorage.getItem('nomeIndicador');
+    if (!nomeSalvo) {
+      document.getElementById('bannerIndicador').style.display = 'flex';
+      document.getElementById('conteudoSite').style.filter = 'blur(5px)';
+    } else {
+      document.getElementById('bannerIndicador').style.display = 'none';
+      document.getElementById('conteudoSite').style.filter = 'none';
+      // Redireciona para página de indicação usando o usuarioId (não só o nome)
+      window.location.href = 'pagina-link-indicador.html?user=' + encodeURIComponent(usuarioId);
+    }
+  }
 
-    document.getElementById('btnEntrar').addEventListener('click', async () => {
-      const nome = document.getElementById('nomeIndicador').value.trim();
-      if (!nome) {
-        alert('Por favor, digite seu nome.');
-        return;
-      }
-      // Salva no Google Sheets via API
-      const sucesso = await salvarNomeIndicador(nome);
-      if (sucesso) {
-        // Salva localmente para não mostrar banner outra vez
-        localStorage.setItem('nomeIndicador', nome);
-        // Redireciona para a página de link de indicação
-        window.location.href = 'pagina-link-indicador.html?user=' + encodeURIComponent(nome);
-      } else {
-        alert('Erro ao salvar seu nome. Tente novamente.');
-      }
-    });
+  async function salvarNomeIndicador(nome, usuarioId) {
+    try {
+      const response = await fetch(WEBAPP_URL, {
+        method: 'POST',
+        body: JSON.stringify({ nome, usuarioId }),
+        headers: { 'Content-Type': 'application/json' }
+      });
+      const data = await response.json();
+      return data.status === 'OK';
+    } catch (error) {
+      console.error('Erro ao salvar nome:', error);
+      return false;
+    }
+  }
 
-    verificarBanner();
-  </script>
+  document.getElementById('btnEntrar').addEventListener('click', async () => {
+    const nome = document.getElementById('nomeIndicador').value.trim();
+    if (!nome) {
+      alert('Por favor, digite seu nome.');
+      return;
+    }
+    const sucesso = await salvarNomeIndicador(nome, usuarioId);
+    if (sucesso) {
+      localStorage.setItem('nomeIndicador', nome);
+      window.location.href = 'pagina-link-indicador.html?user=' + encodeURIComponent(usuarioId);
+    } else {
+      alert('Erro ao salvar seu nome. Tente novamente.');
+    }
+  });
+
+  verificarBanner();
+</script>
+
 </body>
 </html>
