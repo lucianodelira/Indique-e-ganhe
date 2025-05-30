@@ -28,6 +28,7 @@
 <script>
   const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbyFriYIIwGudH0wRNLtD-6iK01sCvklQslRiEeRFdWuuKUWxQpKaTXFSQyavLBGkfyA/exec';
 
+  // Função para pegar ou criar um id local único
   function getUsuarioId() {
     let id = localStorage.getItem('usuarioId');
     if (!id) {
@@ -37,15 +38,18 @@
     return id;
   }
 
+  // Pega parâmetro 'user' da URL
   const urlParams = new URLSearchParams(window.location.search);
-  const usuarioIdURL = urlParams.get('usuario'); // Pega parâmetro 'usuario' da URL
+  const usuarioIdURL = urlParams.get('user'); // CORREÇÃO AQUI: pegar 'user'
 
-  // Usa usuário da URL se existir, senão cria/usa o localStorage
+  // Se tiver 'user' na URL, usa ele, senão usa id local
   const usuarioId = usuarioIdURL || getUsuarioId();
 
+  // Atualiza campo do link de convite com o usuário atual
   document.getElementById('linkConvite').value =
-    window.location.origin + '/Indique-e-ganhe/r.html?ref=' + usuarioId;
+    window.location.origin + '/Indique-e-ganhe/pagina-link-indicador.html?user=' + usuarioId;
 
+  // Busca créditos da API para esse usuário
   fetch(`${WEBAPP_URL}?usuario=${usuarioId}`)
     .then(res => res.json())
     .then(data => {
@@ -59,6 +63,7 @@
       console.error('Erro ao buscar créditos:', err);
     });
 
+  // Função para copiar link do convite
   function copiarLink() {
     const input = document.getElementById('linkConvite');
     input.select();
