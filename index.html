@@ -1,57 +1,124 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Compartilhe e Ganhe</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Site com Banner Indicador</title>
   <style>
-    body { font-family: Arial, sans-serif; text-align: center; padding: 30px; }
-    .container { max-width: 600px; margin: auto; }
-    .creditos { font-size: 24px; margin: 20px 0; }
-    input, button { padding: 10px; margin: 10px; width: 80%; max-width: 400px; }
-    .link-box { background: #f0f0f0; padding: 10px; border-radius: 8px; }
+    /* Banner full screen */
+    #bannerIndicador {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.85);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      z-index: 9999;
+      text-align: center;
+    }
+    #bannerIndicador h1 {
+      font-size: 2.5em;
+      margin-bottom: 15px;
+    }
+    #bannerIndicador p {
+      font-size: 1.2em;
+      margin-bottom: 30px;
+      max-width: 400px;
+    }
+    #bannerIndicador input[type="text"] {
+      padding: 15px;
+      font-size: 1.1em;
+      border-radius: 8px;
+      border: none;
+      width: 80%;
+      max-width: 350px;
+      margin-bottom: 20px;
+    }
+    #bannerIndicador button {
+      padding: 15px 40px;
+      font-size: 1.2em;
+      border: none;
+      border-radius: 8px;
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    #bannerIndicador button:hover {
+      background-color: #45a049;
+    }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Compartilhe e Ganhe</h1>
-    <p>Ganhe créditos indicando amigos!</p>
-    <div class="creditos">Você tem <strong id="creditos">0</strong> créditos.</div>
-    <div class="link-box">
-      Seu link de convite:<br />
-      <input type="text" id="linkConvite" readonly />
-    </div>
-    <button onclick="copiarLink()">Copiar Link</button>
-    <p>Convide amigos para atingir 100 créditos e desbloquear prêmios.</p>
+  <!-- Seu conteúdo do site aqui -->
+  <div id="conteudoSite" style="padding: 20px;">
+    <h1>Bem-vindo ao site!</h1>
+    <p>Conteúdo do site aqui...</p>
+  </div>
+
+  <!-- Banner Indicador -->
+  <div id="bannerIndicador" style="display:none;">
+    <h1>Indique um amigo e ganhe prêmios!</h1>
+    <p>Preencha seu nome para começar a indicar e ganhar créditos para prêmios incríveis.</p>
+    <input type="text" id="nomeIndicador" placeholder="Digite seu nome" />
+    <button id="btnEntrar">Entrar</button>
   </div>
 
   <script>
-    const urlParams = new URLSearchParams(window.location.search);
-    const ref = urlParams.get('ref') || 'anonimo';
+    // URL do seu Google Apps Script WebApp que salva na planilha
+    const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbyFriYIIwGudH0wRNLtD-6iK01sCvklQslRiEeRFdWuuKUWxQpKaTXFSQyavLBGkfyA/exec'; // substitua pelo seu URL
 
-    let usuarioId = localStorage.getItem('usuarioId');
-    if (!usuarioId) {
-      usuarioId = 'user_' + Math.random().toString(36).substr(2, 9);
-      localStorage.setItem('usuarioId', usuarioId);
+    // Função para mostrar ou esconder banner baseado no localStorage
+    function verificarBanner() {
+      const nomeSalvo = localStorage.getItem('nomeIndicador');
+      if (!nomeSalvo) {
+        document.getElementById('bannerIndicador').style.display = 'flex';
+        document.getElementById('conteudoSite').style.filter = 'blur(5px)';
+      } else {
+        // Já tem nome salvo, pode mostrar o conteúdo normal
+        document.getElementById('bannerIndicador').style.display = 'none';
+        document.getElementById('conteudoSite').style.filter = 'none';
+        // Redireciona direto para página do link de indicação
+        window.location.href = 'pagina-link-indicador.html?user=' + encodeURIComponent(nomeSalvo);
+      }
     }
 
-    document.getElementById('linkConvite').value =
-      window.location.origin + "/r.html?ref=" + usuarioId;
+    // Função que salva o nome no Google Sheets via Apps Script
+async function salvarNomeIndicador(nome) {
+  try {
+    const response = await fetch(`${WEBAPP_URL}?usuario=${encodeURIComponent(nome)}`);
+    const data = await response.json();
+    return data.status === 'OK';
+  } catch (error) {
+    console.error('Erro ao salvar nome:', error);
+    return false;
+  }
+}
 
-    fetch('https://script.google.com/macros/s/AKfycbzpRTv3g_HcbrIdXsLtmc_kmFdI6MBTro8GhucaUQr7VE0HHyKJXUZZ7MvAzogrz3wz/exec?usuario=' + usuarioId + '&ref=' + ref)
-      .then(res => res.json())
-      .then(data => {
-        document.getElementById('creditos').innerText = data.creditos;
-      });
 
-    function copiarLink() {
-      const input = document.getElementById('linkConvite');
-      input.select();
-      input.setSelectionRange(0, 99999);
-      document.execCommand('copy');
-      alert("Link copiado!");
-    }
+    document.getElementById('btnEntrar').addEventListener('click', async () => {
+      const nome = document.getElementById('nomeIndicador').value.trim();
+      if (!nome) {
+        alert('Por favor, digite seu nome.');
+        return;
+      }
+      // Salva no Google Sheets via API
+      const sucesso = await salvarNomeIndicador(nome);
+      if (sucesso) {
+        // Salva localmente para não mostrar banner outra vez
+        localStorage.setItem('nomeIndicador', nome);
+        // Redireciona para a página de link de indicação
+        window.location.href = 'pagina-link-indicador.html?user=' + encodeURIComponent(nome);
+      } else {
+        alert('Erro ao salvar seu nome. Tente novamente.');
+      }
+    });
+
+    verificarBanner();
   </script>
 </body>
 </html>
