@@ -2,8 +2,8 @@
   "background_color": "#f3670f",
   "theme_color": "#f3670f",
   "description": "Plataforma Online",
-  "name": "Acertos Club",
-  "short_name": "Acertos Club",
+  "name": "Indique e Ganhe",
+  "short_name": "INDIQUE E GANHE",
   "display": "standalone",
   "start_url": "https://app.acertos.club/pr/sbrqjugZ",
   "icons": [
